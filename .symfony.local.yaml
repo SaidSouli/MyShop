@@ -1,0 +1,4 @@
+workers : 
+    messenger:
+        cmd : ['php', 'bin/console', 'messenger:consume', 'async']
+        watch: ['config', 'src', 'templates', 'vendor']

@@ -10,6 +10,14 @@
         {% block javascripts %}
             {% block importmap %}{{ importmap('app') }}{% endblock %}
         {% endblock %}
+        
+        {% for label, messages in app.flashes %}
+    {% for message in messages %}
+        <div class="alert alert-{{ label == 'danger' ? 'danger' : 'success' }} mt-3">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endfor %}
     </head>
     <body>
         {% block body %}{% endblock %}

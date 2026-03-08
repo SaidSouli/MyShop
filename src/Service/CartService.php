@@ -95,4 +95,42 @@ class CartService {
         }
         return $total;
     }
+    public function updateQuantity($product, $quantity) {
+        if ($quantity < 0) {
+        throw new \InvalidArgumentException("Quantity must be zero or greater.");
+    }
+        $cart = $this->getOrCreateCart();
+        $cartItem = $cart->getCartItems()->filter(function($item) use ($product) {
+            return $item->getProduct() === $product;
+        })->first();
+        if (!$cartItem) {
+            throw new \LogicException("Product not found in cart.");
+        }
+        if ($quantity == 0) {
+            $cart->removeCartItem($cartItem);
+            $this->entityManager->remove($cartItem);
+        } else {
+            if ($quantity > $product->getStock()) {
+                throw new \LogicException("Not enough stock available. Only {$product->getStock()} units left.");
+            }
+            $cartItem->setQuantity($quantity);
+        }
+        $cart->setUpdatedAt(new \DateTimeImmutable());
+        $this->entityManager->flush();
+    } 
+    public function clearCart(): void 
+{
+    $cart = $this->getOrCreateCart();
+    
+    foreach ($cart->getCartItems() as $item) {
+        
+        $this->entityManager->remove($item);
+    }
+
+    
+    $cart->getCartItems()->clear();
+    
+    $cart->setUpdatedAt(new \DateTimeImmutable());
+    $this->entityManager->flush();
+}
 }

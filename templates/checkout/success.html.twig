@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Success - Order #{{ order.id }}{% endblock %}
+
+{% block body %}
+<div class="container mt-5 text-center">
+    <div class="card shadow p-5">
+        <h1 class="display-4 text-success">✔ Thank you!</h1>
+        <p class="lead">Your payment was successful and your order is being prepared.</p>
+        <hr>
+        <p><strong>Order Reference:</strong> {{ order.id }}</p>
+        <p><strong>Total Paid:</strong> {{ order.total|number_format(2) }} USD</p>
+        <p>
+            If you have any questions, please email
+            <a href="mailto:support@myshop.com">support@myshop.com</a>.
+        </p>
+        <a href="/product" class="btn btn-primary mt-3">Continue Shopping</a>
+    </div>
+</div>
+{% endblock %}

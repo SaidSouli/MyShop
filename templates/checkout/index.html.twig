@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello CheckoutController!{% endblock %}
+
+{% block body %}
+{{ parent() }}
+
+    <a href="{{ path('app_checkout_prepare') }}" class="btn btn-success btn-lg w-100">
+    Confirm and Pay
+    </a>
+
+<div>
+
+</div>
+{% endblock %}

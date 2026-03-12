@@ -38,7 +38,7 @@ class CartService
             $this->entityManager->flush();
         }
 
-return $cart;
+    return $cart;
     }
 
     public function addProductTocart($product, $quantity)

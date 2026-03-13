@@ -12,6 +12,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use Symfony\Component\Mailer\MailerInterface;
+
 #[Route('/checkout')]
 final class CheckoutController extends AbstractController
 {
@@ -20,13 +23,15 @@ final class CheckoutController extends AbstractController
     private $cartService;
     private $security;
     private $orderService;
-    public function __construct(#[Autowire('%env(STRIPE_SECRET_KEY)%')] string $stripeSecretKey, EntityManagerInterface $entityManager, CartService $cartService, Security $security, OrderService $orderService)
+    private $mailer;
+    public function __construct(#[Autowire('%env(STRIPE_SECRET_KEY)%')] string $stripeSecretKey,MailerInterface $mailer, EntityManagerInterface $entityManager, CartService $cartService, Security $security, OrderService $orderService)
     {
         $this->stripeSecretKey = $stripeSecretKey;
         $this->entityManager = $entityManager;
         $this->cartService = $cartService;
         $this->security = $security;
         $this->orderService = $orderService;
+        $this->mailer = $mailer;
     }
     #[Route('', name: 'app_checkout')]
     public function index(): Response
@@ -83,6 +88,16 @@ final class CheckoutController extends AbstractController
             if ($order->getStatus() === "paid") {
                 return $this->redirectToRoute('app_home');
             }
+            $email = (new TemplatedEmail())
+                ->from('ServiceTeam@myshop.com')
+                ->to($order->getUser()->getEmail())
+                ->subject('Your order has been confirmed')
+                ->htmlTemplate('emails/order_confirmed.html.twig')
+                ->context(['order' => $order]);
+                
+            $this->mailer->send($email);
+
+
             foreach ($order->getOrderItems() as $item) {
                 $product = $item->getProduct();
                 $product->setStock($product->getStock() - $item->getQuantity());

@@ -1,0 +1,202 @@
+{# templates/product/index.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {% if currentCategory %}
+        {{ currentCategory.name }} — MyShop
+    {% elseif searchTerm %}
+        Search: "{{ searchTerm }}" — MyShop
+    {% else %}
+        Shop — MyShop
+    {% endif %}
+{% endblock %}
+
+{% block body %}
+<div class="flex gap-8">
+
+    {# ── Sidebar ── #}
+    <aside class="hidden lg:block w-56 shrink-0">
+        <h2 class="text-sm font-semibold text-gray-500 uppercase
+                   tracking-wide mb-3">
+            Categories
+        </h2>
+        <ul class="space-y-1">
+            <li>
+                <a href="{{ path('app_shop_index') }}"
+                   class="block px-3 py-2 rounded-lg text-sm
+                          {{ currentCategory is null and searchTerm is null
+                             ? 'bg-indigo-50 text-indigo-700 font-medium'
+                             : 'text-gray-600 hover:bg-gray-100' }}">
+                    All products
+                </a>
+            </li>
+            {% for category in categories %}
+                <li>
+                    <a href="{{ path('app_shop_index',
+                                    {category: category.slug}) }}"
+                       class="block px-3 py-2 rounded-lg text-sm
+                              {{ currentCategory and
+                                 currentCategory.id == category.id
+                                 ? 'bg-indigo-50 text-indigo-700 font-medium'
+                                 : 'text-gray-600 hover:bg-gray-100' }}">
+                        {{ category.name }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </aside>
+
+    {# ── Main area ── #}
+    <div class="flex-1 min-w-0">
+
+        {# Header row: result count + active filters #}
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">
+                    {% if currentCategory %}
+                        {{ currentCategory.name }}
+                    {% elseif searchTerm %}
+                        Results for "{{ searchTerm }}"
+                    {% else %}
+                        All products
+                    {% endif %}
+                </h1>
+                <p class="text-sm text-gray-500 mt-1">
+                    {{ products.getTotalItemCount() }} product{{
+                        products.getTotalItemCount() != 1 ? 's' : ''
+                    }} found
+                </p>
+            </div>
+
+            {# Clear filters link #}
+            {% if currentCategory or searchTerm %}
+                <a href="{{ path('app_shop_index') }}"
+                   class="text-sm text-indigo-600 hover:underline">
+                    Clear filters
+                </a>
+            {% endif %}
+        </div>
+
+        {# Empty state #}
+        {% if products.getTotalItemCount() == 0 %}
+            <div class="text-center py-20 text-gray-400">
+                <p class="text-lg font-medium">No products found</p>
+                <p class="text-sm mt-1">Try a different search or category</p>
+                <a href="{{ path('app_shop_index') }}"
+                   class="mt-4 inline-block text-indigo-600
+                          hover:underline text-sm">
+                    Browse all products
+                </a>
+            </div>
+
+        {% else %}
+
+            {# Product grid #}
+            <div class="grid grid-cols-1 sm:grid-cols-2
+                        xl:grid-cols-3 gap-6">
+                {% for product in products %}
+                    <article class="bg-white rounded-xl shadow-sm
+                                   border border-gray-100 overflow-hidden
+                                   hover:shadow-md transition-shadow">
+
+                        {# Product image #}
+                        <a href="{{ path('app_product_show',
+                                        {slug: product.slug}) }}">
+                            {% if product.imageFilename %}
+                                <img
+                                    src="{{ asset('uploads/products/'
+                                           ~ product.imageFilename) }}"
+                                    alt="{{ product.name }}"
+                                    class="w-full h-52 object-cover">
+                            {% else %}
+                                <div class="w-full h-52 bg-gray-100
+                                            flex items-center
+                                            justify-center text-gray-300
+                                            text-sm">
+                                    No image
+                                </div>
+                            {% endif %}
+                        </a>
+
+                        <div class="p-4">
+
+                            {# Category badge #}
+                            {% if product.category %}
+                                <span class="text-xs font-medium
+                                             text-indigo-600 uppercase
+                                             tracking-wide">
+                                    {{ product.category.name }}
+                                </span>
+                            {% endif %}
+
+                            {# Name #}
+                            <h2 class="mt-1 text-base font-semibold
+                                       text-gray-900 leading-snug">
+                                <a href="{{ path('app_product_show',
+                                                {slug: product.slug}) }}"
+                                   class="hover:text-indigo-600">
+                                    {{ product.name }}
+                                </a>
+                            </h2>
+
+                            {# Price + stock row #}
+                            <div class="mt-3 flex items-center
+                                        justify-between">
+                                <span class="text-lg font-bold
+                                             text-gray-900">
+                                    ${{ product.price|number_format(2) }}
+                                </span>
+
+                                {# Stock badge #}
+                                {% if product.stock == 0 %}
+                                    <span class="text-xs font-medium
+                                                 bg-red-100 text-red-700
+                                                 px-2 py-0.5 rounded-full">
+                                        Out of stock
+                                    </span>
+                                {% elseif product.stock < 5 %}
+                                    <span class="text-xs font-medium
+                                                 bg-amber-100 text-amber-700
+                                                 px-2 py-0.5 rounded-full">
+                                        Only {{ product.stock }} left
+                                    </span>
+                                {% else %}
+                                    <span class="text-xs font-medium
+                                                 bg-green-100 text-green-700
+                                                 px-2 py-0.5 rounded-full">
+                                        In stock
+                                    </span>
+                                {% endif %}
+                            </div>
+
+                            {# Add to cart button #}
+                            <a href="{{ path('app_product_show',
+                                            {slug: product.slug}) }}"
+                               class="mt-4 block w-full text-center
+                                      bg-indigo-600 text-white text-sm
+                                      font-medium py-2 rounded-lg
+                                      hover:bg-indigo-700 transition-colors
+                                      {{ product.stock == 0
+                                         ? 'opacity-50 pointer-events-none'
+                                         : '' }}">
+                                {% if product.stock == 0 %}
+                                    Unavailable
+                                {% else %}
+                                    View product
+                                {% endif %}
+                            </a>
+
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+
+            {# Pagination #}
+            <div class="mt-10 flex justify-center">
+                {{ knp_pagination_render(products) }}
+            </div>
+
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

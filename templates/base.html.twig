@@ -1,24 +1,138 @@
+{# templates/base.html.twig #}
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
-        {% block stylesheets %}
-        {% endblock %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}My Shop{% endblock %}</title>
+    {% block stylesheets %}
+        <script src="https://cdn.tailwindcss.com"></script>
+    {% endblock %}
+</head>
+<body class="bg-gray-50 text-gray-900 min-h-screen flex flex-col">
 
-        {% block javascripts %}
-            {% block importmap %}{{ importmap('app') }}{% endblock %}
-        {% endblock %}
+    {# ── Navbar ── #}
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
 
-        {% set frankenphpHotReload = app.request.server.get('FRANKENPHP_HOT_RELOAD') %}
-        {% if frankenphpHotReload %}
-        <meta name="frankenphp-hot-reload:url" content="{{ frankenphpHotReload }}">
-        <script src="https://cdn.jsdelivr.net/npm/idiomorph"></script>
-        <script src="https://cdn.jsdelivr.net/npm/frankenphp-hot-reload/+esm" type="module"></script>
-        {% endif %}
-    </head>
-    <body>
+            {# Logo #}
+            <a href="{{ path('app_shop_index') }}"
+               class="text-xl font-bold tracking-tight text-indigo-600">
+                MyShop
+            </a>
+
+            {# Search bar #}
+            <form method="GET" action="{{ path('app_shop_index') }}"
+                  class="hidden md:flex items-center gap-2">
+                <input type="text"
+                       name="q"
+                       placeholder="Search products..."
+                       value="{{ app.request.query.get('q') ?? '' }}"
+                       class="border border-gray-300 rounded-lg px-4 py-2
+                              text-sm focus:outline-none focus:ring-2
+                              focus:ring-indigo-400 w-64">
+                <button type="submit"
+                        class="bg-indigo-600 text-white px-4 py-2
+                               rounded-lg text-sm hover:bg-indigo-700">
+                    Search
+                </button>
+            </form>
+
+            {# Right side icons #}
+           <div class="flex items-center gap-4"> 
+
+                {# Cart icon #}
+                {# <a href="{{ path('app_cart_index') }}"
+                   class="relative text-gray-700 hover:text-indigo-600"> #}
+                    {# Cart icon SVG #}
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         class="h-6 w-6" fill="none"
+                         viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4
+                                 5M7 13l-2 5h12M9 21a1 1 0 100-2 1 1 0
+                                 000 2zm10 0a1 1 0 100-2 1 1 0 000 2z"/>
+                    </svg> 
+                    {# Item count badge — wired up in Phase 3 #}
+                    {# <span class="absolute -top-2 -right-2 bg-indigo-600
+                         text-white text-xs rounded-full w-5 h-5
+                         flex items-center justify-center">
+                        {{ cart_count }}
+                    </span> #}
+                </a>
+
+                {# Auth links #}
+                {% if app.user %}
+                    <a href="{{ path('app_account') }}"
+                       class="text-sm text-gray-700 hover:text-indigo-600">
+                        {{ app.user.firstName }}
+                    </a>
+                    <a href="{{ path('app_logout') }}"
+                       class="text-sm text-gray-500 hover:text-red-500">
+                        Logout
+                    </a>
+                {% else %}
+                    {#<a href="{{ path('app_login') }}"
+                       class="text-sm text-gray-700 hover:text-indigo-600">
+                        Login
+                    </a>
+                    {#<a href="{{ path('app_register') }}"
+                       class="text-sm bg-indigo-600 text-white px-3 py-1.5
+                              rounded-lg hover:bg-indigo-700">
+                        Register
+                    </a>#}
+                {% endif %}
+            </div> 
+            
+        </div>
+
+        {# Category nav strip #}
+        <nav class="border-t border-gray-100">
+            <div class="max-w-7xl mx-auto px-4 py-2 flex gap-6 overflow-x-auto">
+                <a href="{{ path('app_shop_index') }}"
+                   class="text-sm whitespace-nowrap
+                          {{ app.request.query.get('category') is null
+                             ? 'text-indigo-600 font-medium'
+                             : 'text-gray-500 hover:text-indigo-600' }}">
+                    All products
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    {# ── Flash messages ── #}
+    <div class="max-w-7xl mx-auto px-4 pt-4 w-full">
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="mb-3 px-4 py-3 rounded-lg text-sm font-medium
+                    {{ label == 'success' ? 'bg-green-100 text-green-800'
+                    : label == 'error'   ? 'bg-red-100 text-red-800'
+                    : 'bg-blue-100 text-blue-800' }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+
+    {# ── Main content ── #}
+    <main class="flex-1 max-w-7xl mx-auto px-4 py-8 w-full">
         {% block body %}{% endblock %}
-    </body>
+    </main>
+
+    {# ── Footer ── #}
+    <footer class="bg-white border-t border-gray-200 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 py-6 text-sm text-gray-500
+                    flex justify-between">
+            <span>© {{ "now"|date("Y") }} MyShop</span>
+            <div class="flex gap-4">
+                <a href="#" class="hover:text-indigo-600">Privacy</a>
+                <a href="#" class="hover:text-indigo-600">Terms</a>
+                <a href="#" class="hover:text-indigo-600">Contact</a>
+            </div>
+        </div>
+    </footer>
+
+    {% block javascripts %}{% endblock %}
+</body>
 </html>

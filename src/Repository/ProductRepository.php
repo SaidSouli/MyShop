@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Category;
 use App\Entity\Product;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -15,6 +16,28 @@ class ProductRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Product::class);
+    }
+    public function findFiltered(?Category $category=null, ?string $search=null ) : QueryBuilder
+    {
+        $qb = $this->createQueryBuilder('p')
+            ->andWhere('p.isActive = :active')
+            ->setParameter('active', true)
+            ->orderBy('p.createdAt', 'DESC');
+        
+        if ($category) {
+            $qb->andWhere('p.category = :category')
+               ->setParameter('category', $category);
+        }
+        
+        if ($search) {
+            $qb->andWhere($qb->expr()->orX(
+                $qb->expr()->like('p.name', ':search'),
+                $qb->expr()->like('p.description', ':search')
+            ))
+            ->setParameter('search', '%' . $search . '%');
+        }
+        
+        return $qb;
     }
 
 //    /**
@@ -81,5 +104,16 @@ class ProductRepository extends ServiceEntityRepository
             ->getOneOrNullResult()
         ;
     }   
-
+    public function findActiveBySlug(string $slug): ?Product
+{
+    return $this->createQueryBuilder('p')
+        ->leftJoin('p.category', 'c')
+        ->addSelect('c')
+        ->where('p.slug = :slug')
+        ->andWhere('p.isActive = :active')
+        ->setParameter('slug', $slug)
+        ->setParameter('active', true)
+        ->getQuery()
+        ->getOneOrNullResult();
+}
 }

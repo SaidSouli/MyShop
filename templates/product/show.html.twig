@@ -1,0 +1,140 @@
+{# templates/product/show.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ product.name }} — MyShop{% endblock %}
+
+{% block body %}
+
+    {# ── Breadcrumb ── #}
+    <nav class="text-sm text-gray-500 mb-6 flex items-center gap-2">
+        <a href="{{ path('app_shop_index') }}"
+           class="hover:text-indigo-600">Shop</a>
+        <span>›</span>
+        {% if product.category %}
+            <a href="{{ path('app_shop_index',
+                            {category: product.category.slug}) }}"
+               class="hover:text-indigo-600">
+                {{ product.category.name }}
+            </a>
+            <span>›</span>
+        {% endif %}
+        <span class="text-gray-900 font-medium">{{ product.name }}</span>
+    </nav>
+
+    {# ── Main layout: image left, info right ── #}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+
+        {# Product image #}
+        <div class="rounded-xl overflow-hidden bg-gray-100
+                    aspect-square flex items-center justify-center">
+            {% if product.imageFilename %}
+                <img
+                    src="{{ asset('uploads/products/'
+                           ~ product.imageFilename) }}"
+                    alt="{{ product.name }}"
+                    class="w-full h-full object-cover">
+            {% else %}
+                <span class="text-gray-300 text-sm">No image available</span>
+            {% endif %}
+        </div>
+
+        {# Product info #}
+        <div class="flex flex-col gap-4">
+
+            {# Category badge #}
+            {% if product.category %}
+                <a href="{{ path('app_shop_index',
+                                {category: product.category.slug}) }}"
+                   class="text-sm font-medium text-indigo-600
+                          uppercase tracking-wide hover:underline
+                          self-start">
+                    {{ product.category.name }}
+                </a>
+            {% endif %}
+
+            {# Name #}
+            <h1 class="text-3xl font-bold text-gray-900 leading-tight">
+                {{ product.name }}
+            </h1>
+
+            {# Price #}
+            <p class="text-2xl font-bold text-indigo-600">
+                ${{ product.price|number_format(2) }}
+            </p>
+
+            {# Stock status #}
+            {% if product.stock == 0 %}
+                <span class="self-start text-sm font-medium
+                             bg-red-100 text-red-700
+                             px-3 py-1 rounded-full">
+                    Out of stock
+                </span>
+            {% elseif product.stock < 5 %}
+                <span class="self-start text-sm font-medium
+                             bg-amber-100 text-amber-700
+                             px-3 py-1 rounded-full">
+                    Only {{ product.stock }} left
+                </span>
+            {% else %}
+                <span class="self-start text-sm font-medium
+                             bg-green-100 text-green-700
+                             px-3 py-1 rounded-full">
+                    In stock
+                </span>
+            {% endif %}
+
+            {# Description #}
+            {% if product.description %}
+                <p class="text-gray-600 leading-relaxed">
+                    {{ product.description|nl2br }}
+                </p>
+            {% endif %}
+
+            {# Divider #}
+            <hr class="border-gray-200">
+
+            {# Add to cart form — wired up in Phase 3 #}
+            <form method="POST"
+                  action="{{ path('app_cart_add', {id: product.id}) }}">
+                <input type="hidden" name="_token"
+                       value="{{ csrf_token('add-to-cart') }}">
+
+                {# Quantity selector #}
+                <div class="flex items-center gap-4 mb-4">
+                    <label for="quantity"
+                           class="text-sm font-medium text-gray-700">
+                        Quantity
+                    </label>
+                    <input type="number"
+                           id="quantity"
+                           name="quantity"
+                           value="1"
+                           min="1"
+                           max="{{ product.stock }}"
+                           {% if product.stock == 0 %}disabled{% endif %}
+                           class="w-20 border border-gray-300 rounded-lg
+                                  px-3 py-2 text-sm text-center
+                                  focus:outline-none focus:ring-2
+                                  focus:ring-indigo-400
+                                  disabled:opacity-50">
+                </div>
+
+                {# Submit button #}
+                <button type="submit"
+                        {% if product.stock == 0 %}disabled{% endif %}
+                        class="w-full bg-indigo-600 text-white font-medium
+                               py-3 rounded-xl hover:bg-indigo-700
+                               transition-colors disabled:opacity-50
+                               disabled:cursor-not-allowed">
+                    {% if product.stock == 0 %}
+                        Out of stock
+                    {% else %}
+                        Add to cart
+                    {% endif %}
+                </button>
+            </form>
+
+        </div>
+    </div>
+
+{% endblock %}

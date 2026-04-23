@@ -42,8 +42,8 @@
            <div class="flex items-center gap-4"> 
 
                 {# Cart icon #}
-                {# <a href="{{ path('app_cart_index') }}"
-                   class="relative text-gray-700 hover:text-indigo-600"> #}
+                 <a href="{{ path('app_cart_index') }}"
+                   class="relative text-gray-700 hover:text-indigo-600"> 
                     {# Cart icon SVG #}
                     <svg xmlns="http://www.w3.org/2000/svg"
                          class="h-6 w-6" fill="none"
@@ -55,11 +55,14 @@
                                  000 2zm10 0a1 1 0 100-2 1 1 0 000 2z"/>
                     </svg> 
                     {# Item count badge — wired up in Phase 3 #}
-                    {# <span class="absolute -top-2 -right-2 bg-indigo-600
+                    {% set count = cart_service.count %}
+                    {% if count > 0 %}
+                        <span class="absolute -top-2 -right-2 bg-indigo-600
                          text-white text-xs rounded-full w-5 h-5
                          flex items-center justify-center">
-                        {{ cart_count }}
-                    </span> #}
+                    {{ count }}
+                    </span>
+                        {% endif %}
                 </a>
 
                 {# Auth links #}

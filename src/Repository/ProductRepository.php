@@ -64,6 +64,25 @@ class ProductRepository extends ServiceEntityRepository
 //            ->getOneOrNullResult()
 //        ;
 //    }
+    public function findByIds (array $ids): array
+    {
+        if (empty($ids)) {
+            return [];
+        }
+        $products = $this->createQueryBuilder('p')
+            ->where('p.id IN (:ids)')
+            ->andWhere('p.isActive = :active')
+            ->setParameter('ids', $ids)
+            ->setParameter('active', true)
+            ->getQuery()
+            ->getResult()
+        ;
+        $indexed = [];
+        foreach ($products as $product) {
+            $indexed[$product->getId()] = $product;
+        }
+        return $indexed;
+    }
     public function findAllActiveProducts(): array
     {
         return $this->createQueryBuilder('p')

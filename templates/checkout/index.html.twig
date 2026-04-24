@@ -1,0 +1,177 @@
+{# templates/checkout/index.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Checkout — MyShop{% endblock %}
+
+{% block body %}
+
+<div class="max-w-5xl mx-auto">
+
+    <h1 class="text-2xl font-bold text-gray-900 mb-8">Checkout</h1>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        {# ── Left: shipping form ── #}
+        <div class="lg:col-span-2">
+            <div class="bg-white rounded-xl border border-gray-100
+                        shadow-sm p-6">
+
+                <h2 class="text-lg font-semibold text-gray-900 mb-6">
+                    Shipping details
+                </h2>
+
+                {{ form_start(form) }}
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+                        {# First name #}
+                        <div>
+                            {{ form_label(form.firstName,
+                               null,
+                               {'label_attr': {
+                                   'class': 'block text-sm font-medium
+                                             text-gray-700 mb-1'
+                               }}) }}
+                            {{ form_widget(form.firstName) }}
+                            {{ form_errors(form.firstName) }}
+                        </div>
+
+                        {# Last name #}
+                        <div>
+                            {{ form_label(form.lastName,
+                               null,
+                               {'label_attr': {
+                                   'class': 'block text-sm font-medium
+                                             text-gray-700 mb-1'
+                               }}) }}
+                            {{ form_widget(form.lastName) }}
+                            {{ form_errors(form.lastName) }}
+                        </div>
+
+                    </div>
+
+                    {# Address #}
+                    <div class="mt-4">
+                        {{ form_label(form.address,
+                           null,
+                           {'label_attr': {
+                               'class': 'block text-sm font-medium
+                                         text-gray-700 mb-1'
+                           }}) }}
+                        {{ form_widget(form.address) }}
+                        {{ form_errors(form.address) }}
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3
+                                gap-4 mt-4">
+
+                        {# City #}
+                        <div class="sm:col-span-1">
+                            {{ form_label(form.city,
+                               null,
+                               {'label_attr': {
+                                   'class': 'block text-sm font-medium
+                                             text-gray-700 mb-1'
+                               }}) }}
+                            {{ form_widget(form.city) }}
+                            {{ form_errors(form.city) }}
+                        </div>
+
+                        {# Postcode #}
+                        <div class="sm:col-span-1">
+                            {{ form_label(form.postcode,
+                               null,
+                               {'label_attr': {
+                                   'class': 'block text-sm font-medium
+                                             text-gray-700 mb-1'
+                               }}) }}
+                            {{ form_widget(form.postcode) }}
+                            {{ form_errors(form.postcode) }}
+                        </div>
+
+                        {# Country #}
+                        <div class="sm:col-span-1">
+                            {{ form_label(form.country,
+                               null,
+                               {'label_attr': {
+                                   'class': 'block text-sm font-medium
+                                             text-gray-700 mb-1'
+                               }}) }}
+                            {{ form_widget(form.country) }}
+                            {{ form_errors(form.country) }}
+                        </div>
+
+                    </div>
+
+                    {# Note #}
+                    <div class="mt-4">
+                        {{ form_label(form.note,
+                           null,
+                           {'label_attr': {
+                               'class': 'block text-sm font-medium
+                                         text-gray-700 mb-1'
+                           }}) }}
+                        {{ form_widget(form.note) }}
+                        {{ form_errors(form.note) }}
+                    </div>
+
+                    {# Submit #}
+                    <button type="submit"
+                            class="mt-6 w-full bg-indigo-600 text-white
+                                   font-medium py-3 rounded-xl
+                                   hover:bg-indigo-700
+                                   transition-colors">
+                        Place order
+                    </button>
+
+                {{ form_end(form) }}
+
+            </div>
+        </div>
+
+        {# ── Right: order summary ── #}
+        <div class="lg:col-span-1">
+            <div class="bg-white rounded-xl border border-gray-100
+                        shadow-sm p-6 sticky top-24">
+
+                <h2 class="text-lg font-bold text-gray-900 mb-4">
+                    Your order
+                </h2>
+
+                <div class="space-y-3 text-sm text-gray-600">
+                    {% for item in items %}
+                        <div class="flex justify-between gap-4">
+                            <span class="truncate">
+                                {{ item.product.name }}
+                                <span class="text-gray-400">
+                                    × {{ item.quantity }}
+                                </span>
+                            </span>
+                            <span class="shrink-0 font-medium
+                                         text-gray-900">
+                                ${{ item.subtotal|number_format(2) }}
+                            </span>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <hr class="border-gray-200 my-4">
+
+                <div class="flex justify-between font-bold
+                            text-gray-900">
+                    <span>Total</span>
+                    <span>${{ total|number_format(2) }}</span>
+                </div>
+
+                <p class="text-xs text-gray-400 mt-4 leading-relaxed">
+                    By placing your order you agree to our terms
+                    of service. Payment is collected at checkout.
+                </p>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

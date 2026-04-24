@@ -1,0 +1,116 @@
+{# templates/checkout/confirmation.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Order confirmed — MyShop{% endblock %}
+
+{% block body %}
+
+<div class="max-w-2xl mx-auto text-center py-12">
+
+    {# Success icon #}
+    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center
+                justify-center mx-auto mb-6">
+        <svg xmlns="http://www.w3.org/2000/svg"
+             class="h-8 w-8 text-green-600"
+             fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                  stroke-width="2" d="M5 13l4 4L19 7"/>
+        </svg>
+    </div>
+
+    <h1 class="text-3xl font-bold text-gray-900 mb-2">
+        Order confirmed!
+    </h1>
+    <p class="text-gray-500 mb-2">
+        Thank you for your purchase.
+    </p>
+    <p class="text-sm text-gray-400 mb-8">
+        A confirmation email has been sent to
+        <strong class="text-gray-600">
+            {{ app.user.email }}
+        </strong>
+    </p>
+
+    {# Order reference #}
+    <div class="bg-indigo-50 rounded-xl px-6 py-4 mb-8
+                inline-block text-left">
+        <p class="text-xs text-indigo-500 uppercase
+                  tracking-wide font-medium mb-1">
+            Order reference
+        </p>
+        <p class="text-2xl font-bold text-indigo-700 tracking-wider">
+            {{ order.reference }}
+        </p>
+    </div>
+
+    {# Order summary #}
+    <div class="bg-white rounded-xl border border-gray-100
+                shadow-sm p-6 text-left mb-8">
+
+        <h2 class="text-base font-semibold text-gray-900 mb-4">
+            Order summary
+        </h2>
+
+        <div class="space-y-3 text-sm text-gray-600 mb-4">
+            {% for item in order.items %}
+                <div class="flex justify-between gap-4">
+                    <span class="truncate">
+                        {{ item.getProductName() }}
+                        <span class="text-gray-400">
+                            × {{ item.quantity }}
+                        </span>
+                    </span>
+                    <span class="shrink-0 font-medium text-gray-900">
+                        ${{ item.getSubtotal()|number_format(2) }}
+                    </span>
+                </div>
+            {% endfor %}
+        </div>
+
+        <hr class="border-gray-200 my-4">
+
+        {# Shipping address #}
+        <div class="grid grid-cols-2 gap-4 text-sm mt-4">
+            <div>
+                <p class="text-xs text-gray-400 uppercase
+                          tracking-wide font-medium mb-1">
+                    Shipping to
+                </p>
+                <p class="text-gray-700">
+                    {{ order.shippingAddress }}<br>
+                    {{ order.shippingCity }},
+                    {{ order.shippingPostcode }}<br>
+                    {{ order.shippingCountry }}
+                </p>
+            </div>
+            <div class="text-right">
+                <p class="text-xs text-gray-400 uppercase
+                          tracking-wide font-medium mb-1">
+                    Order total
+                </p>
+                <p class="text-2xl font-bold text-gray-900">
+                    ${{ order.total|number_format(2) }}
+                </p>
+            </div>
+        </div>
+
+    </div>
+
+    {# Actions #}
+    <div class="flex flex-col sm:flex-row gap-3 justify-center">
+        <a href="{{ path('app_shop_index') }}"
+           class="bg-indigo-600 text-white px-6 py-3 rounded-xl
+                  font-medium hover:bg-indigo-700 transition-colors">
+            Continue shopping
+        </a>
+        <a href="{{ path('app_account_orders') }}"
+           class="border border-gray-300 text-gray-700 px-6 py-3
+                  rounded-xl font-medium hover:border-indigo-400
+                  hover:text-indigo-600 transition-colors">
+            View my orders
+        </a>
+    </div>
+
+</div>
+
+{% endblock %}

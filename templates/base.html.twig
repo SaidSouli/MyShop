@@ -67,7 +67,7 @@
 
                 {# Auth links #}
                 {% if app.user %}
-                    <a href="{{ path('app_account') }}"
+                    <a href="{{ path('app_account_index') }}"
                        class="text-sm text-gray-700 hover:text-indigo-600">
                         {{ app.user.firstName }}
                     </a>
@@ -76,15 +76,15 @@
                         Logout
                     </a>
                 {% else %}
-                    {#<a href="{{ path('app_login') }}"
+                    <a href="{{ path('app_login') }}"
                        class="text-sm text-gray-700 hover:text-indigo-600">
                         Login
                     </a>
-                    {#<a href="{{ path('app_register') }}"
+                    <a href="{{ path('app_register') }}"
                        class="text-sm bg-indigo-600 text-white px-3 py-1.5
                               rounded-lg hover:bg-indigo-700">
                         Register
-                    </a>#}
+                    </a>
                 {% endif %}
             </div> 
             

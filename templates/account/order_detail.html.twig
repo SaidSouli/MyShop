@@ -1,0 +1,168 @@
+{# templates/account/order_detail.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Order {{ order.reference }} — MyShop{% endblock %}
+
+{% block body %}
+
+<div class="max-w-3xl mx-auto">
+
+    {# Breadcrumb #}
+    <nav class="text-sm text-gray-500 mb-6 flex items-center gap-2">
+        <a href="{{ path('app_account_index') }}"
+           class="hover:text-indigo-600">My account</a>
+        <span>›</span>
+        <a href="{{ path('app_account_orders') }}"
+           class="hover:text-indigo-600">Orders</a>
+        <span>›</span>
+        <span class="text-gray-900 font-medium">
+            {{ order.reference }}
+        </span>
+    </nav>
+
+    {# Header row #}
+    <div class="flex items-start justify-between mb-6">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900">
+                {{ order.reference }}
+            </h1>
+            <p class="text-sm text-gray-500 mt-1">
+                Placed on {{ order.createdAt|date('d F Y, H:i') }}
+            </p>
+        </div>
+
+        {# Status badge #}
+        <span class="text-sm font-medium px-3 py-1 rounded-full
+                     {% if order.status.value == 'paid' %}
+                         bg-green-100 text-green-700
+                     {% elseif order.status.value == 'pending' %}
+                         bg-amber-100 text-amber-700
+                     {% elseif order.status.value == 'shipped' %}
+                         bg-blue-100 text-blue-700
+                     {% elseif order.status.value == 'delivered' %}
+                         bg-teal-100 text-teal-700
+                     {% elseif order.status.value == 'cancelled'
+                               or order.status.value == 'refunded' %}
+                         bg-red-100 text-red-700
+                     {% else %}
+                         bg-gray-100 text-gray-600
+                     {% endif %}">
+            {{ order.status.value|capitalize }}
+        </span>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+        {# ── Left: items list ── #}
+        <div class="md:col-span-2 space-y-4">
+
+            <div class="bg-white rounded-xl border border-gray-100
+                        shadow-sm p-6">
+
+                <h2 class="text-base font-semibold text-gray-900 mb-4">
+                    Items ordered
+                </h2>
+
+                <div class="space-y-4">
+                    {% for item in order.items %}
+                        <div class="flex gap-4">
+
+                            {# Image #}
+                            {% if item.product and
+                                  item.product.imageFilename %}
+                                <img
+                                    src="{{ asset('uploads/products/'
+                                           ~ item.product.imageFilename) }}"
+                                    alt="{{ item.getProductName() }}"
+                                    class="w-16 h-16 object-cover
+                                           rounded-lg shrink-0">
+                            {% else %}
+                                <div class="w-16 h-16 bg-gray-100
+                                            rounded-lg shrink-0
+                                            flex items-center
+                                            justify-center
+                                            text-gray-300 text-xs">
+                                    N/A
+                                </div>
+                            {% endif %}
+
+                            {# Info #}
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-semibold
+                                          text-gray-900">
+                                    {{ item.getProductName() }}
+                                </p>
+                                <p class="text-xs text-gray-500 mt-0.5">
+                                    ${{ item.unitPrice|number_format(2) }}
+                                    each × {{ item.quantity }}
+                                </p>
+                            </div>
+
+                            {# Subtotal #}
+                            <div class="shrink-0 text-right">
+                                <p class="text-sm font-bold
+                                          text-gray-900">
+                                    ${{ item.getSubtotal()|number_format(2) }}
+                                </p>
+                            </div>
+
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <hr class="border-gray-100 my-4">
+
+                {# Total #}
+                <div class="flex justify-between font-bold
+                            text-gray-900">
+                    <span>Total</span>
+                    <span>${{ order.total|number_format(2) }}</span>
+                </div>
+
+            </div>
+        </div>
+
+        {# ── Right: shipping + meta ── #}
+        <div class="md:col-span-1 space-y-4">
+
+            {# Shipping address #}
+            <div class="bg-white rounded-xl border border-gray-100
+                        shadow-sm p-5">
+                <h3 class="text-sm font-semibold text-gray-900 mb-3">
+                    Shipped to
+                </h3>
+                <address class="not-italic text-sm text-gray-600
+                                leading-relaxed">
+                    {{ order.shippingAddress }}<br>
+                    {{ order.shippingCity }},
+                    {{ order.shippingPostcode }}<br>
+                    {{ order.shippingCountry }}
+                </address>
+            </div>
+
+            {# Order note #}
+            {% if order.note %}
+                <div class="bg-white rounded-xl border border-gray-100
+                            shadow-sm p-5">
+                    <h3 class="text-sm font-semibold text-gray-900 mb-2">
+                        Your note
+                    </h3>
+                    <p class="text-sm text-gray-600">
+                        {{ order.note }}
+                    </p>
+                </div>
+            {% endif %}
+
+            {# Back to orders #}
+            <a href="{{ path('app_account_orders') }}"
+               class="block text-center text-sm text-indigo-600
+                      hover:underline mt-2">
+                ← Back to orders
+            </a>
+
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

@@ -75,9 +75,9 @@ class CheckoutController extends AbstractController
 
                 // ← The price snapshot moment
                 $orderItem->setUnitPrice($item['product']->getPrice());
-
-                $order->getOrderItems()->add($orderItem);
                 $orderItem->setAnOrder($order);
+                $order->getOrderItems()->add($orderItem);
+                $this->entityManager->persist($orderItem);
 
                 $total += $item['product']->getPrice()
                         * $item['quantity'];

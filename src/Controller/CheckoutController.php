@@ -8,6 +8,7 @@ use App\Enum\OrderStatus;
 use App\Form\CheckoutType;
 use App\Service\CartService;
 use App\Service\MailerService;
+use App\Service\StripeService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,7 +23,8 @@ class CheckoutController extends AbstractController
     public function __construct(
         private CartService            $cartService,
         private EntityManagerInterface $entityManager,
-        private MailerService          $mailerService
+        private MailerService          $mailerService,
+        private StripeService          $stripeService,
     ) {}
 
     // ─────────────────────────────────────────
@@ -99,13 +101,17 @@ class CheckoutController extends AbstractController
             // 9. Clear the cart
             $this->cartService->clear();
 
-            // 10. Send confirmation email
+            // 10. creat a stripe checkout session and redirect 
             try {
-                $this->mailerService->sendOrderConfirmation($order);
+                $session = $this->stripeService->createCheckoutSession($order);
+                return $this->redirect($session->url, Response::HTTP_SEE_OTHER);
             } catch (\Exception $e) {
-                // Don't fail the order if the email fails
                 // Log the error in production
+                $this->addFlash('error', 'Payment could not be initiated.try again or contact support with reference: '.$order->getReference());
+                return $this->redirectToRoute('app_payment_retry', ['reference' => $order->getReference()]  );
             }
+
+            
 
             // 11. Redirect to confirmation page
             return $this->redirectToRoute('app_checkout_confirmation', [

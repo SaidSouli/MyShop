@@ -21,3 +21,15 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+    App\Service\StripeService:
+        arguments:
+            $stripePublicKey: '%env(STRIPE_PUBLIC_KEY)%'
+            $stripeSecretKey: '%env(STRIPE_SECRET_KEY)%'    
+            $appBaseUrl: '%env(APP_BASE_URL)%'
+    App\Controller\PaymentController:
+        arguments:
+            $stripeSecretKey: '%env(STRIPE_SECRET_KEY)%'
+    App\Controller\StripeWebhookController:
+        arguments:
+            $stripeSecretKey: '%env(STRIPE_SECRET_KEY)%'
+            $stripeWebhookSecret: '%env(STRIPE_WEBHOOK_SECRET)%'

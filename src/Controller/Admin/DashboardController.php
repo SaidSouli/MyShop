@@ -2,6 +2,11 @@
 
 namespace App\Controller\Admin;
 
+use App\Entity\Category;
+use App\Entity\Order;
+use App\Entity\Product;
+use App\Entity\User;
+
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
@@ -34,12 +39,21 @@ class DashboardController extends AbstractDashboardController
     public function configureDashboard(): Dashboard
     {
         return Dashboard::new()
-            ->setTitle('MyShop');
+            ->setTitle('MyShop')
+            ->setFaviconPath('favicon.ico');
     }
 
     public function configureMenuItems(): iterable
     {
         yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
         // yield MenuItem::linkTo(SomeCrudController::class, 'The Label', 'fas fa-list');
-    }
+
+        yield MenuItem::section('catalog');
+        
+        yield MenuItem::section('Sales');
+        
+        yield MenuItem::section('');
+        yield MenuItem::linkToUrl('back to shop', 'fa-solid fa-arrow-left', '/shop');
+
+        }   
 }

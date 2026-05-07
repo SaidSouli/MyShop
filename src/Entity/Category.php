@@ -107,4 +107,10 @@ class Category
 
         return $this;
     }
+    // For EasyAdmin display
+    public function __toString(): string
+    {
+                return $this->name ?? 'Category';
+    }
+
 }

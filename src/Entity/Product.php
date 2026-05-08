@@ -41,7 +41,6 @@ class Product
     private ?int $stock = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\File(mimeTypes: ['image/jpeg', 'image/png','image/webp'], mimeTypesMessage: 'Please upload a valid image (JPEG ,PNG or webp).')]
     private ?string $imageFilename = null;
 
     

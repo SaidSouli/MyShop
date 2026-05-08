@@ -16,7 +16,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\SlugField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 
-use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
+
 
 
 class ProductCrudController extends AbstractCrudController
@@ -61,8 +61,8 @@ class ProductCrudController extends AbstractCrudController
             
         yield ImageField::new('imageFilename', 'Product Image')
             ->setBasePath('uploads/images/products')
-            ->setUploadDir('public/uploads/images/products')
-            ->setUploadedFileNamePattern('[randomhash].[extension]')
+            ->setUploadDir('public/images/products')
+            ->setUploadedFileNamePattern('uploads/[slug].[extension]')
             ->setRequired($pageName === Crud::PAGE_NEW);
         yield BooleanField::new('isActive', 'Active');
     }

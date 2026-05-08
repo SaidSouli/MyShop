@@ -51,7 +51,7 @@
                    class="shrink-0">
                     {% if item.product.imageFilename %}
                         <img
-                            src="{{ asset('uploads/products/'
+                            src="{{ asset('images/products/'
                                    ~ item.product.imageFilename) }}"
                             alt="{{ item.product.name }}"
                             class="w-24 h-24 object-cover rounded-lg">
@@ -110,7 +110,7 @@
                             <input type="hidden"
                                    name="_token"
                                    value="{{ csrf_token(
-                                       'update-cart-'
+                                       'update_cart_'
                                        ~ item.product.id
                                    ) }}">
                             <label for="qty_{{ item.product.id }}"
@@ -138,7 +138,7 @@
                             <input type="hidden"
                                    name="_token"
                                    value="{{ csrf_token(
-                                       'remove-from-cart-'
+                                       'remove_from_cart-'
                                        ~ item.product.id
                                    ) }}">
                             <button type="submit"
@@ -160,7 +160,7 @@
                       action="{{ path('app_cart_clear') }}">
                     <input type="hidden"
                            name="_token"
-                           value="{{ csrf_token('clear-cart') }}">
+                           value="{{ csrf_token('clear_cart') }}">
                     <button type="submit"
                             class="text-sm text-gray-400
                                    hover:text-red-500 hover:underline"

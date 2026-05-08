@@ -11,6 +11,65 @@ use Faker\Factory;
 
 class ProductFixtures extends Fixture implements DependentFixtureInterface
 {
+    private const PRODUCT_TYPE_MAP = [
+    'Smartphone'    => 'smartphone',
+    'Laptop'        => 'laptop',
+    'Tablet'        => 'tablet',
+    'Headphones'    => 'headphones',
+    'Smart Watch'   => 'smart_watch',
+    'Camera'        => 'camera',
+    'Speaker'       => 'speaker',
+    'Monitor'       => 'monitor',
+    'Keyboard'      => 'keyboard',
+    'Mouse'         => 'mouse',
+    'T-Shirt'       => 'tshirt',
+    'Jeans'         => 'jeans',
+    'Jacket'        => 'jacket',
+    'Dress'         => 'dress',
+    'Sweater'       => 'sweater',
+    'Shorts'        => 'shorts',
+    'Hat'           => 'hat',
+    'Scarf'         => 'scarf',
+    'Hoodie'        => 'hoodie',
+    'Sneakers'      => 'sneakers',
+    'Novel'         => 'novel',
+    'Cookbook'      => 'cookbook',
+    'Guide'         => 'guide',
+    'Biography'     => 'biography',
+    'Textbook'      => 'textbook',
+    'Magazine'      => 'magazine',
+    'Journal'       => 'journal',
+    'Dictionary'    => 'dictionary',
+    'Encyclopedia'  => 'encyclopedia',
+    'Lamp'          => 'lamp',
+    'Chair'         => 'chair',
+    'Table'         => 'table',
+    'Vase'          => 'vase',
+    'Rug'           => 'rug',
+    'Plant Pot'     => 'plant_pot',
+    'Tool Set'      => 'tool_set',
+    'Storage Box'   => 'storage_box',
+    'Cushion'       => 'cushion',
+    'Curtain'       => 'curtain',
+    'Yoga Mat'      => 'yoga_mat',
+    'Dumbbell'      => 'dumbbell',
+    'Tent'          => 'tent',
+    'Backpack'      => 'backpack',
+    'Bicycle'       => 'bicycle',
+    'Fishing Rod'   => 'fishing_rod',
+    'Soccer Ball'   => 'soccer_ball',
+    'Tennis Racket' => 'tennis_racket',
+    'Camping Stove' => 'camping_stove',
+    'Puzzle'        => 'puzzle',
+    'Board Game'    => 'board_game',
+    'Action Figure' => 'action_figure',
+    'Doll'          => 'doll',
+    'Building Set'  => 'building_set',
+    'Stuffed Animal'=> 'stuffed_animal',
+    'Remote Car'    => 'remote_car',
+    'Lego Set'      => 'lego_set',
+    'Dinosaur Toy'  => 'dinosaur_toy',
+];
     public function load(ObjectManager $manager): void
     {
         $faker = Factory::create();
@@ -46,7 +105,7 @@ class ProductFixtures extends Fixture implements DependentFixtureInterface
             $product->setStock($stock);
             
             // Image filename - using placeholder images (you can use real images later)
-            $product->setImageFilename($this->generateRandomImage());
+            $product->setImageFilename($this->generateImageFilename($randomCategory->getName(), $productName));
             
             // isActive - 90% of products are active
             $product->setIsActive($faker->boolean(90));
@@ -97,34 +156,21 @@ class ProductFixtures extends Fixture implements DependentFixtureInterface
         }
     }
 
-    private function generateRandomImage(): string
-    {
-        // Using placeholder images from picsum.photos or similar
-        // You can replace these with actual image files in your public/uploads directory
-        $images = [
-            'product1.jpg',
-            'product2.jpg',
-            'product3.jpg',
-            'product4.jpg',
-            'product5.jpg',
-            'product6.jpg',
-            'product7.jpg',
-            'product8.jpg',
-            'product9.jpg',
-            'product10.jpg'
-        ];
-        
-        // For now, return a placeholder image name
-        // You can download sample images or use a service like:
-        // https://picsum.photos/400/400?random={$random}
-        
-        $randomImage = $images[array_rand($images)];
-        
-        // Alternative: Use LoremFlick placeholder (requires internet)
-        // return 'https://picsum.photos/id/' . rand(1, 100) . '/400/400';
-        
-        return $randomImage;
+    private function generateImageFilename(string $categoryName, string $productName): string
+{
+    $folder = strtolower(str_replace(' & ', '_', $categoryName));
+
+    // Try to find a matching product type in the name
+    foreach (self::PRODUCT_TYPE_MAP as $productType => $fileKey) {
+        if (stripos($productName, $productType) !== false) {
+            return "{$folder}/{$fileKey}.jpg";
+        }
     }
+
+    // Fallback: pick a random file from the folder (should rarely happen)
+    $fallbackKeys = array_values(self::PRODUCT_TYPE_MAP);
+    return "{$folder}/" . $fallbackKeys[array_rand($fallbackKeys)] . ".jpg";
+}
 
     public function getDependencies(): array
     {

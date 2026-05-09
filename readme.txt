@@ -12,7 +12,7 @@ commands to install essantial recipies and bundles  :
     . composer require form validator  :for handling and validation form data , map form data to entities
     configure the .env file to connect to the database : DATABASE_URL= "mysql://root:password@localhost:port/dbname?serverVersion=8.0"
     - creat the database : php bin/console doctrine:database:create
- 
+    . composer require symfonycasts/verify-email-bundle
     . composer require symfonycasts/tailwind-bundle and then php bin/console tailwind:init 
     . composer require cocur/slugify
     . composer require easycorp/easyadmin-bundle : essential for the admin dashboard

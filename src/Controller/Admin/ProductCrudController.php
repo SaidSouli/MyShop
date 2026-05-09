@@ -16,14 +16,9 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\SlugField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class ProductCrudController extends AbstractCrudController
 {
-    public function __construct(
-        private string $projectDir
-    ) {}
-
     public static function getEntityFqcn(): string
     {
         return Product::class;
@@ -75,28 +70,21 @@ class ProductCrudController extends AbstractCrudController
         $filename = $product->getImageFilename();
         $category = $product->getCategory();
 
-        if (!$filename || !$category) {
+        if (!$filename || !$category || str_contains($filename, '/')) {
             return;
         }
 
-        // If already in category folder, skip
-        if (str_contains($filename, '/')) {
-            return;
-        }
-
-        $categorySlug = strtolower(str_replace([' ', '&', '-'], ['_', '_', '_'], $category->getName()));
-        $uploadDir = $this->projectDir . '/public/images/products/';
+        $projectDir = dirname(__DIR__, 3);
+        $categorySlug = strtolower(str_replace([' ', '&', '-'], '_', $category->getName()));
+        $uploadDir = $projectDir . '/public/images/products/';
         $targetDir = $uploadDir . $categorySlug . '/';
 
         if (!is_dir($targetDir)) {
             mkdir($targetDir, 0755, true);
         }
 
-        $source = $uploadDir . $filename;
-        $destination = $targetDir . $filename;
-
-        if (file_exists($source)) {
-            rename($source, $destination);
+        if (file_exists($uploadDir . $filename)) {
+            rename($uploadDir . $filename, $targetDir . $filename);
             $product->setImageFilename($categorySlug . '/' . $filename);
         }
     }
